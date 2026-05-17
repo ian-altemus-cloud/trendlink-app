@@ -1,0 +1,57 @@
+name: Build and Push to ECR
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: trendlink-app
+  ECR_REGISTRY: 307217365914.dkr.ecr.us-east-1.amazonaws.com
+
+jobs:
+  build-and-push:
+    name: Build, Push, Update Manifest
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::307217365914:role/tl-github-actions-ecr
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  
+
+      - name: Update manifest repo
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+          GH_TOKEN: ${{ secrets.MANIFEST_REPO_TOKEN }}
+        run: |
+          git clone https://x-access-token:$GH_TOKEN@github.com/ian-altemus-cloud/trendlink-manifests.git
+          cd trendlink-manifests
+          sed -i "s|image:.*|image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|" apps/sample/deployment.yaml
+          git config user.email "ci@trendlink.com"
+          git config user.name "GitHub Actions"
+          git add .
+          git commit -m "ci: update image tag to $IMAGE_TAG"
+          git push
