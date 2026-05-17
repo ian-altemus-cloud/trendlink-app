@@ -49,7 +49,7 @@ jobs:
         run: |
           git clone https://x-access-token:$GH_TOKEN@github.com/ian-altemus-cloud/trendlink-manifests.git
           cd trendlink-manifests
-          sed -i "s|image:.*|image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|" apps/sample/deployment.yaml
+          sed -i "s|          image:.*|          image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|" apps/sample/deployment.yaml
           git config user.email "ci@trendlink.com"
           git config user.name "GitHub Actions"
           git add .
