@@ -62,7 +62,7 @@ jobs:
           IMAGE_TAG: ${{ github.sha }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          sed -i "s|tag:.*|tag: $IMAGE_TAG|" helm/values.yml
+          sed -i "s|tag:.*|tag: $IMAGE_TAG|" helm/values.yaml
           git config user.email "ci@trendlink.com"
           git config user.name "GitHub Actions"
           git add helm/values.yml
