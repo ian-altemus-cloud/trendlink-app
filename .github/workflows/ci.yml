@@ -60,13 +60,13 @@ jobs:
       - name: Update manifest repo
         env:
           IMAGE_TAG: ${{ github.sha }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.MANIFEST_REPO_TOKEN }}
         run: |
-         git clone https://x-access-token:$GH_TOKEN@github.com/ian-altemus-cloud/trendlink-manifests.git
-         cd trendlink-manifests
-          sed -i "s|tag:.*|tag: SIMAGE_TAG|" apps/prospect-agent/values.yaml
+          git clone https://x-access-token:$GH_TOKEN@github.com/ian-altemus-cloud/trendlink-manifests.git
+          cd trendlink-manifests
+          sed -i "s|tag:.*|tag: $IMAGE_TAG|" apps/prospect-agent/values.yaml
           git config user.email "ci@trendlink.com"
-          git config user.name "Github Actions"
+          git config user.name "GitHub Actions"
           git add apps/prospect-agent/values.yaml
-          git commit -m "ci:update prospect-agent image tag to $IMAGE_TAGE"
+          git commit -m "ci: update prospect-agent image tag to $IMAGE_TAG"
           git push
