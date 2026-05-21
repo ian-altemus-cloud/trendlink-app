@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name}}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ .Release.Name}}
+
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+    template:
+      metadata:
+        labels:
+          app: {{ .Release.Name }}
+        annotations:
+          vault.hashicorp.com/agent-inject: "true"
+          vault.hashicorp.com/role: "{{ .Values.vault.role }}"
+          vault.hashicorp.com/agent-inject-secret-google: "{{ .Values.vault.googlePlacesSecret }}"
+          vault.hashicorp.com/agent-inject-secret-aws: "{{ .Values.vault.awsSecret }}"
+        spec:
+          serviceAccountName: tl-prospect-sa
+          containers:
+            - name: prospect-agent
+              image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              ports:
+                - containerPort: {{ .Values.service.targetPort }}
+                  env:
+                    - name: AWS_REGION
+                      value: {{ .Values.env.AWS_REGION }}
+                    - name: DYNAMODB_TABLE
+                      value: {{ .Values.env.DYNAMODB_TABLE }}
+                    - name: GOOGLE_PLACES_API_KEY
+                      valueFrom:
+                        secretKeyRef:
+                          name: prospect-agent-secrets
+                          key: google-places-api-key
+                    resources:
+                      requests:
+                        memory: {{ .Values.resources.requests.memory}}
+                        cpu: {{ .Values.resources.requests.cpu }}
+                      limits:
+                        memory: {{ .Values.resources.limits.memory }}
+                        cpu: {{ .Values.resources.limits.cpu }}
+                    livenessProbes:
+                      httpGet:
+                        path: /health
+                        port: {{ .Values.service.targetPort }}
+                      initialDelaySeconds: 10
+                      periodSeconds: 15
+                    readinessProbe:
+                      httpGet:
+                        path: /health
+                        port: {{ .Values.service.targetPort }}
+                      initialDelaySeconds: 5
+                      periodSeconds: 10
