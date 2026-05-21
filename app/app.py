@@ -50,15 +50,15 @@ DYNAMODB_TABLE = os.environ.get('DYNAMODB_TABLE', 'trendlink-prospects')
 dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
 table = dynamodb.Table(DYNAMODB_TABLE)
 
-@app.route('/health')
+@app.route('/prospect-agent/health')
 def health():
     return jsonify({'status': 'healthy'}), 200
 
-@app.route('/metrics')
+@app.route('/prospect-agent/metrics')
 def metrics():
     return generate_latest(), 200, {'Content-Type': 'text/plain'}
 
-@app.route('/search', methods=['POST'])
+@app.route('/prospect-agent/search', methods=['POST'])
 def search():
     with REQUEST_LATENCY.labels(endpoint='/search').time():
         data = request.get_json()
@@ -105,7 +105,7 @@ def search():
 
         return jsonify({'prospects': prospects}), 200
 
-@app.route('/enrich', methods=['POST'])
+@app.route('prospect-agent/enrich', methods=['POST'])
 def enrich():
     with REQUEST_LATENCY.labels(endpoint='/enrich').time():
         data = request.get_json()
@@ -136,7 +136,7 @@ def enrich():
 
         return jsonify({'status': 'stored', 'prospect': prospect}), 200
 
-@app.route('/prospects', methods=['GET'])
+@app.route('prospect-agent/prospects', methods=['GET'])
 def get_prospects():
     with REQUEST_LATENCY.labels(endpoint='/prospects').time():
         response = table.scan()
