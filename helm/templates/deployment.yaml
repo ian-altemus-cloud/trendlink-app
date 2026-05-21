@@ -18,6 +18,10 @@ spec:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "{{ .Values.vault.role }}"
         vault.hashicorp.com/agent-inject-secret-google: "{{ .Values.vault.googlePlacesSecret }}"
+        vault.hashicorp.com/agent-inject-template-google: |
+          {{- with secret "secret/data/trendlink/google-places-api-key" -}}
+          api_key={{ .Data.data.api_key }}
+          {{- end }}
     spec:
       imagePullSecrets:
       - name: ecr-pull-secret
