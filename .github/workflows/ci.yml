@@ -65,6 +65,7 @@ jobs:
           sed -i "s|tag:.*|tag: $IMAGE_TAG|" helm/values.yaml
           git config user.email "ci@trendlink.com"
           git config user.name "GitHub Actions"
-          git add helm/values.yml
+          git remote set-url origin https://x-access-token:$GH_TOKEN@github.com/ian-altemus-cloud/trendlink-app.git
+          git add helm/values.yaml
           git commit -m "ci: update image tag to $IMAGE_TAG"
           git push
