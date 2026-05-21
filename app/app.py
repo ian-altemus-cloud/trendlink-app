@@ -84,7 +84,7 @@ def search():
         places = response.json().get('results')
 
         prospects = []
-        for place in places[10]:
+        for place in places[:10]:
             prospect = {
                 'name': place.get('name'),
                 'address': place.get('formatted_address'),
