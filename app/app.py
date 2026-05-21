@@ -28,8 +28,18 @@ REQUEST_LATENCY = Histogram(
 xray_recorder.configure(service='trendlink-prospect-agent')
 XRayMiddleware(app, xray_recorder)
 
+# --- SECRET RESOLUTION --
+def get_google_api_key():
+    try:
+        with open('/vault/secrets?google', 'r') as f:
+            for line in f:
+                if 'api_key' in line:
+                    return line.split('=')[1].strip()
+    except FileNotFoundError:
+        return os.environ['GOOGLE_PLACES_API_KEY']
+
 # Config from environment — injected by Vault sidecar
-GOOGLE_PLACES_API_KEY = os.environ.get('GOOGLE_PLACES_API_KEY')
+GOOGLE_PLACES_API_KEY = get_google_api_key()
 AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
 DYNAMODB_TABLE = os.environ.get('DYNAMODB_TABLE', 'trendlink-prospects')
 
@@ -136,6 +146,8 @@ def get_prospects():
         ).inc()
 
         return jsonify({'prospects': prospects}), 200
+
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=False)
