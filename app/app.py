@@ -105,7 +105,7 @@ def search():
 
         return jsonify({'prospects': prospects}), 200
 
-@app.route('prospect-agent/enrich', methods=['POST'])
+@app.route('/prospect-agent/enrich', methods=['POST'])
 def enrich():
     with REQUEST_LATENCY.labels(endpoint='/enrich').time():
         data = request.get_json()
@@ -136,7 +136,7 @@ def enrich():
 
         return jsonify({'status': 'stored', 'prospect': prospect}), 200
 
-@app.route('prospect-agent/prospects', methods=['GET'])
+@app.route('/prospect-agent/prospects', methods=['GET'])
 def get_prospects():
     with REQUEST_LATENCY.labels(endpoint='/prospects').time():
         response = table.scan()
