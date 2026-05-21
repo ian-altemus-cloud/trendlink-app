@@ -32,11 +32,13 @@ XRayMiddleware(app, xray_recorder)
 def get_google_api_key():
     try:
         with open('/vault/secrets/google', 'r') as f:
-            for line in f:
-                if 'api_key' in line:
-                    return line.split('api_key:')[1].strip().rstrip(']')
+            content = f.read()
+        import re
+        match = re.search(r'api_key:([^\s\]]+)', content)
+        if match:
+            return match.group(1).strip()
     except FileNotFoundError:
-        return os.environ.get('GOOGLE_PLACES_API_KEY', '')
+        pass
     return os.environ.get('GOOGLE_PLACES_API_KEY', '')
 
 # Config from environment — injected by Vault sidecar
