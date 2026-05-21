@@ -17,11 +17,18 @@ jobs:
 
     permissions:
       id-token: write
-      contents: read
+      contents: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: SAST Scan - Checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: dockerfile,kubernetes
+          soft_fail: true
 
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
@@ -42,16 +49,22 @@ jobs:
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG  
 
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          format: table
+          exit-code: 0
+          severity: CRITICAL,HIGH
+
       - name: Update manifest repo
         env:
           IMAGE_TAG: ${{ github.sha }}
-          GH_TOKEN: ${{ secrets.MANIFEST_REPO_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git clone https://x-access-token:$GH_TOKEN@github.com/ian-altemus-cloud/trendlink-manifests.git
-          cd trendlink-manifests
-          sed -i "s|          image:.*|          image: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|" apps/sample/deployment.yaml
+          sed -i "s|tag:.*|tag: $IMAGE_TAG|" helm/values.yml
           git config user.email "ci@trendlink.com"
           git config user.name "GitHub Actions"
-          git add .
+          git add helm/values.yml
           git commit -m "ci: update image tag to $IMAGE_TAG"
           git push
