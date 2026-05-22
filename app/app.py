@@ -1,4 +1,3 @@
-from unicodedata import category
 
 from flask import Flask, request, jsonify
 import boto3
@@ -69,7 +68,7 @@ def search():
             REQUEST_COUNT.labels(
                 endpoint='/search',
                 method='POST',
-                status_code=400
+                status=400
             ).inc()
             return jsonify({'error': 'category and location are required'}), 400
 
@@ -81,7 +80,7 @@ def search():
         }
 
         response = requests.get(url, params=params)
-        places = response.json().get('results')
+        places = response.json().get('results', [])
 
         prospects = []
         for place in places[:10]:
@@ -100,7 +99,7 @@ def search():
         REQUEST_COUNT.labels(
             endpoint='/search',
             method='POST',
-            status_code=200
+            status=200
         ).inc()
 
         return jsonify({'prospects': prospects}), 200
@@ -145,7 +144,7 @@ def get_prospects():
         REQUEST_COUNT.labels(
             endpoint='/prospects',
             method='GET',
-            status_code='200'
+            status='200'
         ).inc()
 
         return jsonify({'prospects': prospects}), 200
