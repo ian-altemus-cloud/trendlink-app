@@ -18,6 +18,7 @@ spec:
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/role: "{{ .Values.vault.role }}"
         vault.hashicorp.com/agent-inject-secret-google: "{{ .Values.vault.googlePlacesSecret }}"
+        vault.hashicorp.com/agent-inject-secret-aws: "secret/data/trendlink/aws-credentials"
     spec:
       imagePullSecrets:
       - name: ecr-pull-secret

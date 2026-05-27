@@ -1,4 +1,4 @@
-
+from click.decorators import pass_meta_key
 from flask import Flask, request, jsonify
 import boto3
 import requests
@@ -40,13 +40,33 @@ def get_google_api_key():
         pass
     return os.environ.get('GOOGLE_PLACES_API_KEY', '')
 
+# Get aws credentials from vault
+def get_aws_credentials():
+    try:
+        with open('/vault/secrets/aws', 'r') as f:
+            content = f.read()
+        import re
+        access_key = re.search(r'access_key_id:([^\s\]]+)', content)
+        secret_key = re.search(r'secret_access_key:([^\s\]]+)', content)
+        if access_key and secret_key:
+            return access_key.group(1).strip(), secret_key.group(1).strip()
+    except FileNotFoundError:
+        pass
+    return None, None
+
 # Config from environment — injected by Vault sidecar
 GOOGLE_PLACES_API_KEY = get_google_api_key()
 AWS_REGION = os.environ.get('AWS_REGION', 'us-east-1')
 DYNAMODB_TABLE = os.environ.get('DYNAMODB_TABLE', 'trendlink-prospects')
 
 # DynamoDB client
-dynamodb = boto3.resource('dynamodb', region_name=AWS_REGION)
+access_key, secret_key = get_aws_credentials()
+dynamodb = boto3.resource(
+    'dynamodb',
+            region_name=AWS_REGION,
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_key
+)
 table = dynamodb.Table(DYNAMODB_TABLE)
 
 @app.route('/prospect-agent/health')
@@ -148,7 +168,6 @@ def get_prospects():
         ).inc()
 
         return jsonify({'prospects': prospects}), 200
-
 
 
 if __name__ == '__main__':
