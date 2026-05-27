@@ -1,12 +1,10 @@
-from click.decorators import pass_meta_key
 from flask import Flask, request, jsonify
 import boto3
 import requests
 import os
 import logging
 from prometheus_client import Counter, Histogram, generate_latest
-from aws_xray_sdk.core import xray_recorder
-from aws_xray_sdk.ext.flask.middleware import XRayMiddleware
+
 
 app = Flask(__name__)
 
@@ -22,10 +20,6 @@ REQUEST_LATENCY = Histogram(
     'Request latency',
     ['endpoint']
 )
-
-# X-Ray tracing
-xray_recorder.configure(service='trendlink-prospect-agent')
-XRayMiddleware(app, xray_recorder)
 
 # --- SECRET RESOLUTION --
 def get_google_api_key():
