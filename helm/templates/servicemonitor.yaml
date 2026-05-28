@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: prospect-agent
+  namespace: default
+  labels:
+    release: kube-prometheus-stack
+spec:
+  selector:
+    matchLabels:
+      app: prospect-agent
+  endpoints:
+    - port: http
+      path: /prospect-agent/metrics
+      intervals: 15s
