@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/trendlink-app.iml" filepath="$PROJECT_DIR$/.idea/trendlink-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/trendlink-app-agent.iml" filepath="$PROJECT_DIR$/.idea/trendlink-app-agent.iml" />
     </modules>
   </component>
 </project>
