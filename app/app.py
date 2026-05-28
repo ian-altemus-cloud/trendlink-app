@@ -132,22 +132,49 @@ def enrich():
             ).inc()
             return jsonify({'error': 'prospect is required'}), 400
 
-        #Store in DynamoDB
+        place_id = prospect.get('place_id')
+
+        # Call Google Places Details API
+        details_url = 'https://maps.googleapis.com/maps/api/place/details/json'
+        params = {
+            'place_id': place_id,
+            'fields': 'name,formatted_phone_number,website,rating',
+            'key': GOOGLE_PLACES_API_KEY,
+        }
+        details_response = requests.get(details_url, params=params)
+        details = details_response.json().get('result', {})
+
+        # Store enriched prospect in DynamoDB
         table.put_item(Item={
-            'place_id': prospect.get('place_id'),
+            'place_id': place_id,
             'name': prospect.get('name'),
             'address': prospect.get('address'),
-            'instagram': prospect.get('instagram', 'pending'),
-            'enriched': False
+            'phone': prospect.get('formatted_phone'),
+            'website': details.get('website'),
+            'rating': str(details.get('rating', '')),
+            'instagram': None
+            'enriched': True
         })
 
         REQUEST_COUNT.labels(
             endpoint='/enrich',
             method='POST',
-            status='200'
+
         ).inc()
 
-        return jsonify({'status': 'stored', 'prospect': prospect}), 200
+        return jsonify({
+            'status': 'enriched',
+            'prospect': {
+                'place_id': place_id,
+                'name': prospect.get('name'),
+                'address': prospect.get('address'),
+                'phone': details.get('formatted_phone_number'),
+                'website': details.get('website'),
+                'rating': details.get('rating'),
+                'instagram': None,
+                'enriched': True
+            }
+        }), 200
 
 @app.route('/prospect-agent/prospects', methods=['GET'])
 def get_prospects():
