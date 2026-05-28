@@ -149,7 +149,7 @@ def enrich():
             'place_id': place_id,
             'name': prospect.get('name'),
             'address': prospect.get('address'),
-            'phone': prospect.get('formatted_phone'),
+            'phone': details.get('formatted_phone_number'),
             'website': details.get('website'),
             'rating': str(details.get('rating', '')),
             'instagram': None,
@@ -159,7 +159,7 @@ def enrich():
         REQUEST_COUNT.labels(
             endpoint='/enrich',
             method='POST',
-
+            status=200
         ).inc()
 
         return jsonify({
