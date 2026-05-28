@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrendLink — Prospect Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#0057FF;
+  --brand-soft:#EEF3FF;
+  --success:#00875A;
+  --success-soft:#E3FCEF;
+  --warn:#FF8B00;
+  --warn-soft:#FFF4E5;
+  --surface:#ffffff;
+  --bg:#f5f5f5;
+  --border:#e5e7eb;
+  --text:#111827;
+  --muted:#6b7280;
+  --hint:#9ca3af;
+}
+[data-theme="dark"]{
+  --surface:#1a1a1a;
+  --bg:#111111;
+  --border:#2d2d2d;
+  --text:#f9fafb;
+  --muted:#9ca3af;
+  --hint:#6b7280;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}
+.frame{display:flex;flex-direction:column;min-height:100vh}
+.header{background:#0f0f0f;padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:8px}
+.logo-mark{width:24px;height:24px;background:#0057FF;border-radius:5px;display:flex;align-items:center;justify-content:center}
+.logo-mark i{color:white;font-size:12px}
+.logo-text{font-size:14px;font-weight:500;color:white;letter-spacing:-0.3px}
+.header-nav{display:flex;gap:2px}
+.hn{background:none;border:none;padding:5px 12px;border-radius:6px;font-size:12px;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.12s}
+.hn:hover{color:white;background:rgba(255,255,255,0.08)}
+.hn.active{color:white;background:rgba(255,255,255,0.12);font-weight:500}
+.hbadge{font-size:11px;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.07);padding:3px 8px;border-radius:4px;border:0.5px solid rgba(255,255,255,0.1)}
+.stat-bar{background:var(--surface);border-bottom:0.5px solid var(--border);padding:0 28px;display:flex;gap:0;flex-shrink:0}
+.stat{padding:14px 24px 14px 0;border-right:0.5px solid var(--border);margin-right:24px;display:flex;flex-direction:column;gap:2px}
+.stat:last-child{border-right:none}
+.stat-n{font-size:20px;font-weight:500;letter-spacing:-0.8px;color:var(--text)}
+.stat-l{font-size:11px;color:var(--hint);letter-spacing:0.03em}
+.body{flex:1;padding:24px 28px;overflow-y:auto}
+.page{display:none}
+.page.on{display:block}
+.search-hero{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px}
+.hero-title{font-size:15px;font-weight:500;color:var(--text)}
+.hero-sub{font-size:12px;color:var(--hint);margin-top:3px;margin-bottom:18px}
+.search-inputs{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
+.inp-wrap{display:flex;flex-direction:column;gap:5px}
+.inp-label{font-size:11px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--hint)}
+.inp{padding:9px 13px;border:0.5px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:13px;outline:none;transition:border 0.12s;width:100%}
+.inp:focus{border-color:var(--brand);background:var(--surface)}
+.search-go{background:#0f0f0f;color:white;border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;transition:opacity 0.12s;white-space:nowrap}
+.search-go:hover{opacity:0.82}
+.search-go:disabled{opacity:0.4;cursor:not-allowed}
+.results-wrap{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+.rw-head{padding:14px 20px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.rw-title{font-size:13px;font-weight:500;color:var(--text)}
+.bulk-bar{padding:9px 20px;background:#EEF3FF;border-bottom:0.5px solid #C7D9FF;display:flex;align-items:center;gap:12px}
+.bulk-text{font-size:12px;color:#0040CC;flex:1}
+.bulk-go{background:#0057FF;color:white;border:none;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px}
+.bulk-go:hover{opacity:0.88}
+.lead-card{display:flex;align-items:center;padding:14px 20px;gap:14px;border-bottom:0.5px solid var(--border);transition:background 0.1s}
+.lead-card:last-child{border-bottom:none}
+.lead-card:hover{background:var(--bg)}
+.lc-check{width:14px;height:14px;accent-color:#0057FF;cursor:pointer;flex-shrink:0}
+.lc-avatar{width:36px;height:36px;border-radius:8px;background:var(--bg);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--muted);flex-shrink:0;letter-spacing:-0.5px}
+.lc-body{flex:1;min-width:0}
+.lc-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lc-addr{font-size:11px;color:var(--hint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.lc-chips{display:flex;gap:6px;align-items:center;flex-shrink:0;flex-wrap:wrap;max-width:300px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 8px;border-radius:5px;font-weight:500}
+.chip-star{background:#FFFBEB;color:#92400E}
+.chip-phone{background:#E3FCEF;color:#006644}
+.chip-web{background:#EEF3FF;color:#0040CC}
+.chip-null{background:var(--bg);color:var(--hint)}
+.lc-action{flex-shrink:0}
+.enrich-btn{background:none;border:0.5px solid var(--border);padding:5px 12px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;color:var(--muted);transition:all 0.12s;display:inline-flex;align-items:center;gap:4px}
+.enrich-btn:hover{border-color:#0057FF;color:#0057FF;background:#EEF3FF}
+.enrich-btn.done{border-color:#00875A;color:#00875A;background:#E3FCEF;cursor:default}
+.enrich-btn.spin{opacity:0.45;cursor:not-allowed}
+.pipeline-table{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
+.pt-head{padding:14px 20px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.pt-title{font-size:13px;font-weight:500}
+.pt-filters{display:flex;gap:3px}
+.pf{background:none;border:none;padding:4px 11px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--muted);transition:all 0.12s}
+.pf.on{background:var(--bg);color:var(--text);font-weight:500}
+.pf:hover:not(.on){background:var(--bg)}
+.pt-row{display:flex;align-items:center;padding:12px 20px;gap:14px;border-bottom:0.5px solid var(--border);transition:background 0.1s}
+.pt-row:last-child{border-bottom:none}
+.pt-row:hover{background:var(--bg)}
+.pt-av{width:32px;height:32px;border-radius:7px;background:var(--bg);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted);flex-shrink:0}
+.pt-name{flex:1.5;min-width:0}
+.pt-n{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pt-a{font-size:11px;color:var(--hint);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pt-field{flex:1;font-size:12px;color:var(--muted)}
+.pt-field a{color:#0057FF;text-decoration:none;font-size:12px}
+.pt-field a:hover{text-decoration:underline}
+.pt-status{flex-shrink:0}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:5px}
+.tag-green{background:#E3FCEF;color:#006644}
+.tag-amber{background:#FFF4E5;color:#A05000}
+.empty{padding:48px 20px;text-align:center}
+.empty i{font-size:28px;color:var(--hint);display:block;margin-bottom:10px}
+.empty-t{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
+.empty-s{font-size:12px;color:var(--hint)}
+.btn-sm{background:none;border:0.5px solid var(--border);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--muted);display:inline-flex;align-items:center;gap:5px;transition:all 0.12s}
+.btn-sm:hover{background:var(--bg);color:var(--text)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#0f0f0f;color:white;padding:9px 16px;border-radius:8px;font-size:12px;font-weight:500;opacity:0;transition:opacity 0.18s;pointer-events:none;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="frame">
+  <div class="header">
+    <div class="logo">
+      <div class="logo-mark"><i class="ti ti-trending-up"></i></div>
+      <span class="logo-text">TrendLink</span>
+    </div>
+    <div class="header-nav">
+      <button class="hn active" onclick="nav('search',this)">Discover</button>
+      <button class="hn" onclick="nav('pipeline',this)">Pipeline</button>
+    </div>
+    <div><span class="hbadge">Dev workspace</span>
+    <button class="hn" id="theme-toggle" onclick="toggleTheme()"><i class="ti ti-moon"></i></button>
+    </div>
+  </div>
+
+  <div class="stat-bar">
+    <div class="stat"><span class="stat-n" id="s-total">—</span><span class="stat-l">Total prospects</span></div>
+    <div class="stat"><span class="stat-n" id="s-enriched">—</span><span class="stat-l">Enriched</span></div>
+    <div class="stat"><span class="stat-n" id="s-pending">—</span><span class="stat-l">Pending</span></div>
+    <div class="stat"><span class="stat-n" id="s-rating">—</span><span class="stat-l">Avg rating</span></div>
+  </div>
+
+  <div class="body">
+    <div id="p-search" class="page on">
+      <div class="search-hero">
+        <div class="hero-title">Find new prospects</div>
+        <div class="hero-sub">Search any business category in any market</div>
+        <div class="search-inputs">
+          <div class="inp-wrap"><span class="inp-label">Business type</span><input class="inp" id="i-cat" placeholder="nail bars, med spas, dental, gyms…" value="nail bars"/></div>
+          <div class="inp-wrap"><span class="inp-label">Market</span><input class="inp" id="i-loc" placeholder="Newport Beach CA" value="Newport Beach CA"/></div>
+          <button class="search-go" id="go-btn" onclick="doSearch()"><i class="ti ti-search"></i>Find prospects</button>
+        </div>
+      </div>
+      <div id="results-wrap" class="results-wrap" style="display:none">
+        <div class="rw-head">
+          <span class="rw-title" id="r-label">Results</span>
+          <div style="display:flex;gap:8px">
+            <button class="btn-sm" onclick="selectAll()"><i class="ti ti-check"></i>Select all</button>
+          </div>
+        </div>
+        <div id="bulk-bar" class="bulk-bar" style="display:none">
+          <span class="bulk-text"><span id="bulk-count">0</span> selected</span>
+          <button class="bulk-go" onclick="enrichSelected()"><i class="ti ti-sparkles"></i>Enrich all selected</button>
+        </div>
+        <div id="leads-list"></div>
+      </div>
+    </div>
+
+    <div id="p-pipeline" class="page">
+      <div class="pipeline-table">
+        <div class="pt-head">
+          <span class="pt-title">Prospect pipeline</span>
+          <div class="pt-filters">
+            <button class="pf on" onclick="setPF('all',this)">All</button>
+            <button class="pf" onclick="setPF('enriched',this)">Enriched</button>
+            <button class="pf" onclick="setPF('pending',this)">Pending</button>
+          </div>
+        </div>
+        <div id="pipe-list"><div class="empty"><i class="ti ti-loader-2"></i><div class="empty-t">Loading pipeline…</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const B='/prospect-agent';
+let results=[],prospects=[],sel=new Set(),pf='all';
+
+function nav(page,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.hn').forEach(n=>n.classList.remove('active'));
+  document.getElementById('p-'+page).classList.add('on');
+  el.classList.add('active');
+  if(page==='pipeline')loadPipe();
+}
+
+function toast(msg,ok=true){
+  const t=document.getElementById('toast');
+  t.innerHTML=`<i class="ti ${ok?'ti-check':'ti-alert-circle'}" style="font-size:14px"></i>${msg}`;
+  t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),2400);
+}
+
+function ini(n){return(n||'?').split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();}
+
+async function loadStats(){
+  try{
+    const r=await fetch(B+'/prospects');
+    const d=await r.json();
+    prospects=d.prospects||[];
+    const en=prospects.filter(p=>p.enriched);
+    const rt=en.filter(p=>p.rating).map(p=>parseFloat(p.rating));
+    const avg=rt.length?(rt.reduce((a,b)=>a+b,0)/rt.length).toFixed(1):'—';
+    document.getElementById('s-total').textContent=prospects.length||'0';
+    document.getElementById('s-enriched').textContent=en.length||'0';
+    document.getElementById('s-pending').textContent=(prospects.length-en.length)||'0';
+    document.getElementById('s-rating').textContent=avg;
+  }catch(e){}
+}
+
+async function doSearch(){
+  const cat=document.getElementById('i-cat').value.trim();
+  const loc=document.getElementById('i-loc').value.trim();
+  if(!cat||!loc)return;
+  const btn=document.getElementById('go-btn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="ti ti-loader-2"></i>Searching…';
+  sel.clear();
+  try{
+    const r=await fetch(B+'/search',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({category:cat,location:loc})});
+    const d=await r.json();
+    results=d.prospects||[];
+    renderLeads();
+    document.getElementById('results-wrap').style.display='block';
+    document.getElementById('r-label').textContent=results.length+' prospects found in '+loc;
+    toast(results.length+' prospects found');
+  }catch(e){toast('Search failed — check connection',false);}
+  btn.disabled=false;
+  btn.innerHTML='<i class="ti ti-search"></i>Find prospects';
+}
+
+function renderLeads(){
+  const el=document.getElementById('leads-list');
+  if(!results.length){el.innerHTML='<div class="empty"><i class="ti ti-search-off"></i><div class="empty-t">No results</div><div class="empty-s">Try a different category or location</div></div>';return;}
+  el.innerHTML=results.map(p=>{
+    const pid=p.place_id.replace(/\W/g,'_');
+    return'<div class="lead-card" id="lc-'+pid+'">'+
+      '<input type="checkbox" class="lc-check" id="chk-'+pid+'" onchange="toggleSel(\''+p.place_id+'\',\''+pid+'\')">'+
+      '<div class="lc-avatar">'+ini(p.name)+'</div>'+
+      '<div class="lc-body"><div class="lc-name">'+p.name+'</div><div class="lc-addr">'+(p.address||'')+'</div></div>'+
+      '<div class="lc-chips">'+(p.rating?'<span class="chip chip-star"><i class="ti ti-star"></i>'+p.rating+'</span>':'')+
+      '<span class="chip chip-null" id="st-'+pid+'">Not enriched</span></div>'+
+      '<div class="lc-action"><button class="enrich-btn" id="eb-'+pid+'" onclick=\'enrichOne('+JSON.stringify(p)+',"'+pid+'")\'>'+
+      '<i class="ti ti-sparkles"></i>Enrich</button></div></div>';
+  }).join('');
+}
+
+function toggleSel(id,pid){
+  if(sel.has(id))sel.delete(id);else sel.add(id);
+  document.getElementById('bulk-count').textContent=sel.size;
+  document.getElementById('bulk-bar').style.display=sel.size?'flex':'none';
+}
+
+function selectAll(){
+  results.forEach(p=>{
+    const pid=p.place_id.replace(/\W/g,'_');
+    const chk=document.getElementById('chk-'+pid);
+    if(chk&&!chk.disabled){sel.add(p.place_id);chk.checked=true;}
+  });
+  document.getElementById('bulk-count').textContent=sel.size;
+  document.getElementById('bulk-bar').style.display=sel.size?'flex':'none';
+}
+
+async function enrichOne(p,pid){
+  const btn=document.getElementById('eb-'+pid);
+  const stag=document.getElementById('st-'+pid);
+  if(!btn||btn.classList.contains('done'))return;
+  btn.classList.add('spin');
+  btn.innerHTML='<i class="ti ti-loader-2"></i>Enriching…';
+  try{
+    const r=await fetch(B+'/enrich',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prospect:p})});
+    const d=await r.json();
+    if(d.status==='enriched'){
+      btn.classList.remove('spin');btn.classList.add('done');
+      btn.innerHTML='<i class="ti ti-check"></i>Enriched';
+      if(stag){stag.className='chip chip-phone';stag.innerHTML='<i class="ti ti-check"></i>Enriched';}
+      const card=document.getElementById('lc-'+pid);
+      if(card&&d.prospect){
+        const chips=card.querySelector('.lc-chips');
+        if(d.prospect.phone)chips.innerHTML='<span class="chip chip-phone"><i class="ti ti-phone"></i>'+d.prospect.phone+'</span>'+(chips.innerHTML||'');
+        if(d.prospect.website){try{const h=new URL(d.prospect.website).hostname;chips.innerHTML+='<span class="chip chip-web"><i class="ti ti-world"></i>'+h+'</span>';}catch(e){}}
+      }
+      toast(p.name.split(' ')[0]+' enriched');
+      loadStats();
+    }
+  }catch(e){
+    btn.classList.remove('spin');
+    btn.innerHTML='<i class="ti ti-sparkles"></i>Enrich';
+    toast('Enrichment failed',false);
+  }
+}
+
+async function enrichSelected(){
+  const toEnrich=results.filter(p=>sel.has(p.place_id));
+  for(const p of toEnrich){const pid=p.place_id.replace(/\W/g,'_');await enrichOne(p,pid);}
+  sel.clear();
+  document.getElementById('bulk-bar').style.display='none';
+  document.querySelectorAll('.lc-check').forEach(c=>c.checked=false);
+}
+
+async function loadPipe(){
+  const el=document.getElementById('pipe-list');
+  el.innerHTML='<div class="empty"><i class="ti ti-loader-2"></i><div class="empty-t">Loading…</div></div>';
+  try{
+    const r=await fetch(B+'/prospects');
+    const d=await r.json();
+    prospects=d.prospects||[];
+    renderPipe();loadStats();
+  }catch(e){
+    el.innerHTML='<div class="empty"><i class="ti ti-alert-circle"></i><div class="empty-t">Connection failed</div><div class="empty-s">Make sure the prospect agent is running</div></div>';
+  }
+}
+
+function setPF(f,el){
+  pf=f;
+  document.querySelectorAll('.pf').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  renderPipe();
+}
+
+function renderPipe(){
+  const el=document.getElementById('pipe-list');
+  let data=prospects;
+  if(pf==='enriched')data=prospects.filter(p=>p.enriched);
+  if(pf==='pending')data=prospects.filter(p=>!p.enriched);
+  if(!data.length){
+    el.innerHTML='<div class="empty"><i class="ti ti-inbox"></i><div class="empty-t">Nothing here yet</div><div class="empty-s">Discover prospects and enrich them to build your pipeline</div></div>';
+    return;
+  }
+  el.innerHTML=data.map(p=>'<div class="pt-row">'+
+    '<div class="pt-av">'+ini(p.name)+'</div>'+
+    '<div class="pt-name"><div class="pt-n">'+p.name+'</div><div class="pt-a">'+(p.address||'')+'</div></div>'+
+    '<div class="pt-field">'+(p.phone||'<span style="color:var(--hint)">—</span>')+'</div>'+
+    '<div class="pt-field">'+(p.website?'<a href="'+p.website+'" target="_blank">'+(function(){try{return new URL(p.website).hostname}catch(e){return'website'}})()+'</a>':'<span style="color:var(--hint)">—</span>')+'</div>'+
+    '<div class="pt-field">'+(p.rating?'<span class="chip chip-star"><i class="ti ti-star"></i>'+p.rating+'</span>':'<span style="color:var(--hint)">—</span>')+'</div>'+
+    '<div class="pt-status"><span class="tag '+(p.enriched?'tag-green':'tag-amber')+'">'+(p.enriched?'Enriched':'Pending')+'</span></div>'+
+    '</div>').join('');
+}
+
+loadStats();
+    function toggleTheme(){
+    const root=document.documentElement;
+    const isDark=root.getAttribute('data-theme')==='dark';
+    root.setAttribute('data-theme',isDark?'light':'dark');
+    document.getElementById('theme-toggle').innerHTML=isDark?'<i class="ti ti-moon"></i>':'<i class="ti ti-sun"></i>';
+}
+</script>
+</body>
+</html>

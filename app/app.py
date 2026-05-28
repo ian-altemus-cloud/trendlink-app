@@ -67,6 +67,10 @@ table = dynamodb.Table(DYNAMODB_TABLE)
 def health():
     return jsonify({'status': 'healthy'}), 200
 
+@app.route('/prospect-agent/dashboard')
+def dashboard():
+    return app.send_static_file('dashboard.html')
+
 @app.route('/prospect-agent/metrics')
 def metrics():
     return generate_latest(), 200, {'Content-Type': 'text/plain'}
