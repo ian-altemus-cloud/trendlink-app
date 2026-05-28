@@ -152,7 +152,7 @@ def enrich():
             'phone': prospect.get('formatted_phone'),
             'website': details.get('website'),
             'rating': str(details.get('rating', '')),
-            'instagram': None
+            'instagram': None,
             'enriched': True
         })
 
