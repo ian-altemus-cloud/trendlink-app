@@ -142,7 +142,7 @@ def enrich():
         details_url = 'https://maps.googleapis.com/maps/api/place/details/json'
         params = {
             'place_id': place_id,
-            'fields': 'name,formatted_phone_number,website,rating',
+            'fields': 'name,formatted_phone_number,website,rating,user_ratings_total,price_level,business_status,reviews,editorial_summary',
             'key': GOOGLE_PLACES_API_KEY,
         }
         details_response = requests.get(details_url, params=params)
@@ -156,6 +156,11 @@ def enrich():
             'phone': details.get('formatted_phone_number'),
             'website': details.get('website'),
             'rating': str(details.get('rating', '')),
+            'review_count': str(details.get('user_ratings_total', '')),
+            'price_level': str(details.get('price_level', '')),
+            'business_status': details.get('business_status'),
+            'reviews': str(details.get('reviews', [])),
+            'editorial_summary': details.get('editorial_summary', {}).get('overview', ''),
             'instagram': None,
             'enriched': True
         })
@@ -175,6 +180,11 @@ def enrich():
                 'phone': details.get('formatted_phone_number'),
                 'website': details.get('website'),
                 'rating': details.get('rating'),
+                'review_count': str(details.get('user_ratings_total', '')),
+                'price_level': str(details.get('price_level', '')),
+                'business_status': details.get('business_status'),
+                'reviews': str(details.get('reviews', [])),
+                'editorial_summary': details.get('editorial_summary', {}).get('overview', ''),
                 'instagram': None,
                 'enriched': True
             }
@@ -189,7 +199,7 @@ def get_prospects():
         REQUEST_COUNT.labels(
             endpoint='/prospects',
             method='GET',
-            status='200'
+            status=200
         ).inc()
 
         return jsonify({'prospects': prospects}), 200
