@@ -8,12 +8,6 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --brand:#0057FF;
-  --brand-soft:#EEF3FF;
-  --success:#00875A;
-  --success-soft:#E3FCEF;
-  --warn:#FF8B00;
-  --warn-soft:#FFF4E5;
   --surface:#ffffff;
   --bg:#f5f5f5;
   --border:#e5e7eb;
@@ -29,7 +23,7 @@
   --muted:#9ca3af;
   --hint:#6b7280;
 }
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);transition:background 0.2s,color 0.2s}
 .frame{display:flex;flex-direction:column;min-height:100vh}
 .header{background:#0f0f0f;padding:0 28px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .logo{display:flex;align-items:center;gap:8px}
@@ -56,7 +50,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .inp-wrap{display:flex;flex-direction:column;gap:5px}
 .inp-label{font-size:11px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--hint)}
 .inp{padding:9px 13px;border:0.5px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text);font-size:13px;outline:none;transition:border 0.12s;width:100%}
-.inp:focus{border-color:var(--brand);background:var(--surface)}
+.inp:focus{border-color:#0057FF;background:var(--surface)}
 .search-go{background:#0f0f0f;color:white;border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;transition:opacity 0.12s;white-space:nowrap}
 .search-go:hover{opacity:0.82}
 .search-go:disabled{opacity:0.4;cursor:not-allowed}
@@ -67,25 +61,53 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bulk-text{font-size:12px;color:#0040CC;flex:1}
 .bulk-go{background:#0057FF;color:white;border:none;padding:5px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px}
 .bulk-go:hover{opacity:0.88}
-.lead-card{display:flex;align-items:center;padding:14px 20px;gap:14px;border-bottom:0.5px solid var(--border);transition:background 0.1s}
+
+/* Lead card */
+.lead-card{border-bottom:0.5px solid var(--border);transition:background 0.1s}
 .lead-card:last-child{border-bottom:none}
-.lead-card:hover{background:var(--bg)}
+.lead-summary{display:flex;align-items:center;padding:14px 20px;gap:14px;cursor:pointer}
+.lead-summary:hover{background:var(--bg)}
 .lc-check{width:14px;height:14px;accent-color:#0057FF;cursor:pointer;flex-shrink:0}
 .lc-avatar{width:36px;height:36px;border-radius:8px;background:var(--bg);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:var(--muted);flex-shrink:0;letter-spacing:-0.5px}
 .lc-body{flex:1;min-width:0}
 .lc-name{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lc-addr{font-size:11px;color:var(--hint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-.lc-chips{display:flex;gap:6px;align-items:center;flex-shrink:0;flex-wrap:wrap;max-width:300px}
+.lc-chips{display:flex;gap:6px;align-items:center;flex-shrink:0;flex-wrap:wrap}
 .chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:3px 8px;border-radius:5px;font-weight:500}
 .chip-star{background:#FFFBEB;color:#92400E}
-.chip-phone{background:#E3FCEF;color:#006644}
-.chip-web{background:#EEF3FF;color:#0040CC}
-.chip-null{background:var(--bg);color:var(--hint)}
-.lc-action{flex-shrink:0}
+.chip-green{background:#E3FCEF;color:#006644}
+.chip-blue{background:#EEF3FF;color:#0040CC}
+.chip-gray{background:var(--bg);color:var(--muted);border:0.5px solid var(--border)}
+.chip-red{background:#FEE2E2;color:#991B1B}
+.chip-price{background:#F3F4F6;color:var(--muted)}
+.lc-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
 .enrich-btn{background:none;border:0.5px solid var(--border);padding:5px 12px;border-radius:6px;font-size:11px;font-weight:500;cursor:pointer;color:var(--muted);transition:all 0.12s;display:inline-flex;align-items:center;gap:4px}
 .enrich-btn:hover{border-color:#0057FF;color:#0057FF;background:#EEF3FF}
 .enrich-btn.done{border-color:#00875A;color:#00875A;background:#E3FCEF;cursor:default}
 .enrich-btn.spin{opacity:0.45;cursor:not-allowed}
+.expand-btn{background:none;border:none;cursor:pointer;color:var(--hint);padding:4px;display:flex;align-items:center;transition:transform 0.2s}
+.expand-btn.open{transform:rotate(180deg)}
+
+/* Expanded detail */
+.lead-detail{display:none;padding:16px 20px 20px 70px;background:var(--bg);border-top:0.5px solid var(--border)}
+.lead-detail.open{display:block}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.detail-item{display:flex;flex-direction:column;gap:3px}
+.detail-label{font-size:10px;font-weight:500;letter-spacing:0.05em;text-transform:uppercase;color:var(--hint)}
+.detail-value{font-size:13px;color:var(--text)}
+.detail-value a{color:#0057FF;text-decoration:none;font-size:13px}
+.detail-value a:hover{text-decoration:underline}
+.detail-summary{font-size:12px;color:var(--muted);line-height:1.6;margin-top:4px;padding:10px 12px;background:var(--surface);border:0.5px solid var(--border);border-radius:8px}
+.detail-reviews{margin-top:12px}
+.review-item{padding:10px 12px;background:var(--surface);border:0.5px solid var(--border);border-radius:8px;margin-bottom:8px}
+.review-item:last-child{margin-bottom:0}
+.review-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.review-author{font-size:12px;font-weight:500;color:var(--text)}
+.review-rating{font-size:11px;color:#92400E;background:#FFFBEB;padding:2px 6px;border-radius:4px}
+.review-text{font-size:12px;color:var(--muted);line-height:1.5}
+.no-data{font-size:12px;color:var(--hint);font-style:italic}
+
+/* Pipeline */
 .pipeline-table{background:var(--surface);border:0.5px solid var(--border);border-radius:12px;overflow:hidden}
 .pt-head{padding:14px 20px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .pt-title{font-size:13px;font-weight:500}
@@ -93,20 +115,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .pf{background:none;border:none;padding:4px 11px;border-radius:6px;font-size:12px;cursor:pointer;color:var(--muted);transition:all 0.12s}
 .pf.on{background:var(--bg);color:var(--text);font-weight:500}
 .pf:hover:not(.on){background:var(--bg)}
-.pt-row{display:flex;align-items:center;padding:12px 20px;gap:14px;border-bottom:0.5px solid var(--border);transition:background 0.1s}
-.pt-row:last-child{border-bottom:none}
-.pt-row:hover{background:var(--bg)}
+.pipe-row{border-bottom:0.5px solid var(--border);transition:background 0.1s}
+.pipe-row:last-child{border-bottom:none}
+.pipe-summary{display:flex;align-items:center;padding:12px 20px;gap:14px;cursor:pointer}
+.pipe-summary:hover{background:var(--bg)}
 .pt-av{width:32px;height:32px;border-radius:7px;background:var(--bg);border:0.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted);flex-shrink:0}
 .pt-name{flex:1.5;min-width:0}
 .pt-n{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pt-a{font-size:11px;color:var(--hint);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pt-field{flex:1;font-size:12px;color:var(--muted)}
-.pt-field a{color:#0057FF;text-decoration:none;font-size:12px}
-.pt-field a:hover{text-decoration:underline}
-.pt-status{flex-shrink:0}
+.pt-chips{display:flex;gap:6px;align-items:center;flex:2;flex-wrap:wrap}
+.pt-status{flex-shrink:0;display:flex;align-items:center;gap:8px}
 .tag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 9px;border-radius:5px}
 .tag-green{background:#E3FCEF;color:#006644}
 .tag-amber{background:#FFF4E5;color:#A05000}
+.pipe-detail{display:none;padding:14px 20px 16px 66px;background:var(--bg);border-top:0.5px solid var(--border)}
+.pipe-detail.open{display:block}
+
 .empty{padding:48px 20px;text-align:center}
 .empty i{font-size:28px;color:var(--hint);display:block;margin-bottom:10px}
 .empty-t{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
@@ -128,8 +152,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <button class="hn active" onclick="nav('search',this)">Discover</button>
       <button class="hn" onclick="nav('pipeline',this)">Pipeline</button>
     </div>
-    <div><span class="hbadge">Dev workspace</span>
-    <button class="hn" id="theme-toggle" onclick="toggleTheme()"><i class="ti ti-moon"></i></button>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="hbadge">Dev workspace</span>
+      <button class="hn" id="theme-toggle" onclick="toggleTheme()"><i class="ti ti-moon"></i></button>
     </div>
   </div>
 
@@ -194,6 +219,13 @@ function nav(page,el){
   if(page==='pipeline')loadPipe();
 }
 
+function toggleTheme(){
+  const root=document.documentElement;
+  const isDark=root.getAttribute('data-theme')==='dark';
+  root.setAttribute('data-theme',isDark?'light':'dark');
+  document.getElementById('theme-toggle').innerHTML=isDark?'<i class="ti ti-moon"></i>':'<i class="ti ti-sun"></i>';
+}
+
 function toast(msg,ok=true){
   const t=document.getElementById('toast');
   t.innerHTML=`<i class="ti ${ok?'ti-check':'ti-alert-circle'}" style="font-size:14px"></i>${msg}`;
@@ -202,6 +234,24 @@ function toast(msg,ok=true){
 }
 
 function ini(n){return(n||'?').split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase();}
+
+function priceLabel(p){if(!p)return'';const map={1:'$',2:'$$',3:'$$$',4:'$$$$'};return map[parseInt(p)]||'';}
+
+function statusChip(s){
+  if(!s)return'';
+  if(s==='OPERATIONAL')return'<span class="chip chip-green"><i class="ti ti-circle-check"></i>Open</span>';
+  if(s==='CLOSED_TEMPORARILY')return'<span class="chip chip-gray">Temp closed</span>';
+  if(s==='CLOSED_PERMANENTLY')return'<span class="chip chip-red">Permanently closed</span>';
+  return'';
+}
+
+function toggleExpand(pid){
+  const detail=document.getElementById('det-'+pid);
+  const btn=document.getElementById('exp-'+pid);
+  if(!detail)return;
+  detail.classList.toggle('open');
+  btn.classList.toggle('open');
+}
 
 async function loadStats(){
   try{
@@ -216,6 +266,40 @@ async function loadStats(){
     document.getElementById('s-pending').textContent=(prospects.length-en.length)||'0';
     document.getElementById('s-rating').textContent=avg;
   }catch(e){}
+}
+
+function buildDetailHTML(p){
+  let html='<div class="detail-grid">';
+  html+=`<div class="detail-item"><span class="detail-label">Phone</span><span class="detail-value">${p.phone||'<span class="no-data">Not available</span>'}</span></div>`;
+  html+=`<div class="detail-item"><span class="detail-label">Website</span><span class="detail-value">${p.website?`<a href="${p.website}" target="_blank">${p.website}</a>`:'<span class="no-data">Not available</span>'}</span></div>`;
+  html+=`<div class="detail-item"><span class="detail-label">Rating</span><span class="detail-value">${p.rating?`${p.rating} ★ ${p.review_count?'('+p.review_count+' reviews)':''}`: '<span class="no-data">No rating</span>'}</span></div>`;
+  html+=`<div class="detail-item"><span class="detail-label">Price level</span><span class="detail-value">${priceLabel(p.price_level)||'<span class="no-data">Unknown</span>'}</span></div>`;
+  html+=`<div class="detail-item"><span class="detail-label">Status</span><span class="detail-value">${p.business_status||'<span class="no-data">Unknown</span>'}</span></div>`;
+  html+=`<div class="detail-item"><span class="detail-label">Instagram</span><span class="detail-value">${p.instagram||'<span class="no-data">Not linked yet</span>'}</span></div>`;
+  html+='</div>';
+  if(p.editorial_summary){
+    html+=`<div class="detail-summary"><i class="ti ti-quote" style="font-size:13px;margin-right:6px;color:var(--hint)"></i>${p.editorial_summary}</div>`;
+  }
+  if(p.reviews&&p.reviews!=='[]'){
+    try{
+      let revs=p.reviews;
+      if(typeof revs==='string')revs=JSON.parse(revs.replace(/'/g,'"'));
+      if(Array.isArray(revs)&&revs.length){
+        html+='<div class="detail-reviews">';
+        revs.slice(0,3).forEach(rv=>{
+          html+=`<div class="review-item">
+            <div class="review-header">
+              <span class="review-author">${rv.author_name||'Anonymous'}</span>
+              <span class="review-rating">★ ${rv.rating||'?'}</span>
+            </div>
+            <div class="review-text">${rv.text||''}</div>
+          </div>`;
+        });
+        html+='</div>';
+      }
+    }catch(e){}
+  }
+  return html;
 }
 
 async function doSearch(){
@@ -244,14 +328,27 @@ function renderLeads(){
   if(!results.length){el.innerHTML='<div class="empty"><i class="ti ti-search-off"></i><div class="empty-t">No results</div><div class="empty-s">Try a different category or location</div></div>';return;}
   el.innerHTML=results.map(p=>{
     const pid=p.place_id.replace(/\W/g,'_');
-    return'<div class="lead-card" id="lc-'+pid+'">'+
-      '<input type="checkbox" class="lc-check" id="chk-'+pid+'" onchange="toggleSel(\''+p.place_id+'\',\''+pid+'\')">'+
-      '<div class="lc-avatar">'+ini(p.name)+'</div>'+
-      '<div class="lc-body"><div class="lc-name">'+p.name+'</div><div class="lc-addr">'+(p.address||'')+'</div></div>'+
-      '<div class="lc-chips">'+(p.rating?'<span class="chip chip-star"><i class="ti ti-star"></i>'+p.rating+'</span>':'')+
-      '<span class="chip chip-null" id="st-'+pid+'">Not enriched</span></div>'+
-      '<div class="lc-action"><button class="enrich-btn" id="eb-'+pid+'" onclick=\'enrichOne('+JSON.stringify(p)+',"'+pid+'")\'>'+
-      '<i class="ti ti-sparkles"></i>Enrich</button></div></div>';
+    return`<div class="lead-card" id="lc-${pid}">
+      <div class="lead-summary">
+        <input type="checkbox" class="lc-check" id="chk-${pid}" onchange="toggleSel('${p.place_id}','${pid}')" onclick="event.stopPropagation()">
+        <div class="lc-avatar">${ini(p.name)}</div>
+        <div class="lc-body">
+          <div class="lc-name">${p.name}</div>
+          <div class="lc-addr">${p.address||''}</div>
+        </div>
+        <div class="lc-chips" id="chips-${pid}">
+          ${p.rating?`<span class="chip chip-star"><i class="ti ti-star"></i>${p.rating}</span>`:''}
+          <span class="chip chip-gray" id="st-${pid}">Not enriched</span>
+        </div>
+        <div class="lc-right">
+          <button class="enrich-btn" id="eb-${pid}" onclick='event.stopPropagation();enrichOne(${JSON.stringify(p)},"${pid}")'><i class="ti ti-sparkles"></i>Enrich</button>
+          <button class="expand-btn" id="exp-${pid}" onclick="toggleExpand('${pid}')"><i class="ti ti-chevron-down"></i></button>
+        </div>
+      </div>
+      <div class="lead-detail" id="det-${pid}">
+        <div class="no-data">Enrich this prospect to see full details</div>
+      </div>
+    </div>`;
   }).join('');
 }
 
@@ -274,6 +371,7 @@ function selectAll(){
 async function enrichOne(p,pid){
   const btn=document.getElementById('eb-'+pid);
   const stag=document.getElementById('st-'+pid);
+  const det=document.getElementById('det-'+pid);
   if(!btn||btn.classList.contains('done'))return;
   btn.classList.add('spin');
   btn.innerHTML='<i class="ti ti-loader-2"></i>Enriching…';
@@ -281,15 +379,22 @@ async function enrichOne(p,pid){
     const r=await fetch(B+'/enrich',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prospect:p})});
     const d=await r.json();
     if(d.status==='enriched'){
+      const ep=d.prospect;
       btn.classList.remove('spin');btn.classList.add('done');
       btn.innerHTML='<i class="ti ti-check"></i>Enriched';
-      if(stag){stag.className='chip chip-phone';stag.innerHTML='<i class="ti ti-check"></i>Enriched';}
-      const card=document.getElementById('lc-'+pid);
-      if(card&&d.prospect){
-        const chips=card.querySelector('.lc-chips');
-        if(d.prospect.phone)chips.innerHTML='<span class="chip chip-phone"><i class="ti ti-phone"></i>'+d.prospect.phone+'</span>'+(chips.innerHTML||'');
-        if(d.prospect.website){try{const h=new URL(d.prospect.website).hostname;chips.innerHTML+='<span class="chip chip-web"><i class="ti ti-world"></i>'+h+'</span>';}catch(e){}}
+      if(stag){stag.className='chip chip-green';stag.innerHTML='<i class="ti ti-check"></i>Enriched';}
+      const chips=document.getElementById('chips-'+pid);
+      if(chips){
+        let newChips='';
+        if(ep.rating)newChips+=`<span class="chip chip-star"><i class="ti ti-star"></i>${ep.rating}${ep.review_count?' ('+ep.review_count+')':''}</span>`;
+        if(ep.price_level)newChips+=`<span class="chip chip-price">${priceLabel(ep.price_level)}</span>`;
+        newChips+=statusChip(ep.business_status);
+        newChips+='<span class="chip chip-green"><i class="ti ti-check"></i>Enriched</span>';
+        chips.innerHTML=newChips;
       }
+      if(det)det.innerHTML=buildDetailHTML(ep);
+      const expBtn=document.getElementById('exp-'+pid);
+      if(det&&expBtn){det.classList.add('open');expBtn.classList.add('open');}
       toast(p.name.split(' ')[0]+' enriched');
       loadStats();
     }
@@ -337,23 +442,42 @@ function renderPipe(){
     el.innerHTML='<div class="empty"><i class="ti ti-inbox"></i><div class="empty-t">Nothing here yet</div><div class="empty-s">Discover prospects and enrich them to build your pipeline</div></div>';
     return;
   }
-  el.innerHTML=data.map(p=>'<div class="pt-row">'+
-    '<div class="pt-av">'+ini(p.name)+'</div>'+
-    '<div class="pt-name"><div class="pt-n">'+p.name+'</div><div class="pt-a">'+(p.address||'')+'</div></div>'+
-    '<div class="pt-field">'+(p.phone||'<span style="color:var(--hint)">—</span>')+'</div>'+
-    '<div class="pt-field">'+(p.website?'<a href="'+p.website+'" target="_blank">'+(function(){try{return new URL(p.website).hostname}catch(e){return'website'}})()+'</a>':'<span style="color:var(--hint)">—</span>')+'</div>'+
-    '<div class="pt-field">'+(p.rating?'<span class="chip chip-star"><i class="ti ti-star"></i>'+p.rating+'</span>':'<span style="color:var(--hint)">—</span>')+'</div>'+
-    '<div class="pt-status"><span class="tag '+(p.enriched?'tag-green':'tag-amber')+'">'+(p.enriched?'Enriched':'Pending')+'</span></div>'+
-    '</div>').join('');
+  el.innerHTML=data.map(p=>{
+    const pid=p.place_id.replace(/\W/g,'_');
+    return`<div class="pipe-row">
+      <div class="pipe-summary" onclick="togglePipe('${pid}')">
+        <div class="pt-av">${ini(p.name)}</div>
+        <div class="pt-name">
+          <div class="pt-n">${p.name}</div>
+          <div class="pt-a">${p.address||''}</div>
+        </div>
+        <div class="pt-chips">
+          ${p.rating?`<span class="chip chip-star"><i class="ti ti-star"></i>${p.rating}${p.review_count?' ('+p.review_count+')':''}</span>`:''}
+          ${p.price_level?`<span class="chip chip-price">${priceLabel(p.price_level)}</span>`:''}
+          ${statusChip(p.business_status)}
+          ${p.phone?`<span class="chip chip-green"><i class="ti ti-phone"></i>${p.phone}</span>`:''}
+        </div>
+        <div class="pt-status">
+          <span class="tag ${p.enriched?'tag-green':'tag-amber'}">${p.enriched?'Enriched':'Pending'}</span>
+          <button class="expand-btn" id="pexp-${pid}"><i class="ti ti-chevron-down"></i></button>
+        </div>
+      </div>
+      <div class="pipe-detail" id="pdet-${pid}">
+        ${p.enriched?buildDetailHTML(p):'<div class="no-data">Enrich this prospect to see full details</div>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function togglePipe(pid){
+  const det=document.getElementById('pdet-'+pid);
+  const btn=document.getElementById('pexp-'+pid);
+  if(!det)return;
+  det.classList.toggle('open');
+  btn.classList.toggle('open');
 }
 
 loadStats();
-    function toggleTheme(){
-    const root=document.documentElement;
-    const isDark=root.getAttribute('data-theme')==='dark';
-    root.setAttribute('data-theme',isDark?'light':'dark');
-    document.getElementById('theme-toggle').innerHTML=isDark?'<i class="ti ti-moon"></i>':'<i class="ti ti-sun"></i>';
-}
 </script>
 </body>
 </html>
